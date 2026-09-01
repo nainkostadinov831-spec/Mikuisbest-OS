@@ -70,3 +70,8 @@ firmware-linux-free
 firmware-realtek
 firmware-iwlwifi
 firmware-atheros
+
+## --- Bootloader (needed inside chroot for isolinux/hybrid ISO build) -------
+isolinux
+syslinux-common
+syslinux-efi
