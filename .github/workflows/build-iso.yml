@@ -6,32 +6,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: debian:trixie
     timeout-minutes: 180
     steps:
+      - name: Install git for checkout
+        run: apt-get update && apt-get install -y git ca-certificates sudo
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Free up disk space
-        run: |
-          echo "Before cleanup:"
-          df -h /
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo rm -rf /usr/local/share/boost
-          sudo docker image prune --all --force || true
-          echo "After cleanup:"
-          df -h /
-
       - name: Prepare build host (install live-build + deps)
-        run: sudo bash scripts/00-prepare-host.sh
+        run: bash scripts/00-prepare-host.sh
 
       - name: Initialize live-build config
         run: bash scripts/01-init-config.sh
 
       - name: Build the ISO
-        run: sudo bash build.sh
+        run: bash build.sh
 
       - name: Show build output
         run: ls -la Mikoisbest_OS_v1.iso Mikoisbest_OS_v1.iso.sha256
