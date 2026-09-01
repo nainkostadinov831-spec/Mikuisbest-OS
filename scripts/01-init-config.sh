@@ -21,9 +21,8 @@ lb config \
     --archive-areas "main contrib non-free-firmware" \
     --mirror-bootstrap "http://deb.debian.org/debian/" \
     --mirror-chroot "http://deb.debian.org/debian/" \
-    --mirror-chroot-security "http://deb.debian.org/debian-security/" \
     --mirror-binary "http://deb.debian.org/debian/" \
-    --mirror-binary-security "http://deb.debian.org/debian-security/" \
+    --security false \
     --binary-images iso-hybrid \
     --debian-installer none \
     --iso-application "Mikoisbest OS" \
