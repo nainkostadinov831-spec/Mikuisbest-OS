@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-#
-# 01-init-config.sh — Initializes the live-build config/ tree for
-# Mikoisbest OS and populates it from config-src/. Run from the project
-# root as a normal user (lb config itself does not require root).
-
 set -euo pipefail
 
 DEBIAN_RELEASE="trixie"
@@ -19,19 +14,15 @@ command -v lb >/dev/null 2>&1 || die "'lb' not found. Run scripts/00-prepare-hos
 
 log "Initializing live-build config for Debian $DEBIAN_RELEASE / $TARGET_ARCH..."
 
-# --archive-areas: main + contrib (torbrowser-launcher) + non-free-firmware
-# (needed for real Wi-Fi/graphics hardware on physical machines/USB drives).
-# --bootloaders defaults to a hybrid set (isolinux + grub-efi) which covers
-# both BIOS and UEFI targets, satisfying the dual-boot requirement.
 lb config \
     --distribution "$DEBIAN_RELEASE" \
     --architectures "$TARGET_ARCH" \
     --archive-areas "main contrib non-free-firmware" \
---mirror-bootstrap " http://deb.debian.org/debian/ " \
---mirror-chroot " http://deb.debian.org/debian/ " \
---mirror-chroot-security " http://deb.debian.org/debian-security/ " \
---mirror-binary " http://deb.debian.org/debian/ " \
---mirror-binary-security " http://deb.debian.org/debian-security/ " \
+    --mirror-bootstrap "http://deb.debian.org/debian/" \
+    --mirror-chroot "http://deb.debian.org/debian/" \
+    --mirror-chroot-security "http://deb.debian.org/debian-security/" \
+    --mirror-binary "http://deb.debian.org/debian/" \
+    --mirror-binary-security "http://deb.debian.org/debian-security/" \
     --binary-images iso-hybrid \
     --debian-installer none \
     --iso-application "Mikoisbest OS" \
