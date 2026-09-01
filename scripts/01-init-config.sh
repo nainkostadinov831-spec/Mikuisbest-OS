@@ -15,6 +15,7 @@ command -v lb >/dev/null 2>&1 || die "'lb' not found. Run scripts/00-prepare-hos
 log "Initializing live-build config for Debian $DEBIAN_RELEASE / $TARGET_ARCH..."
 
 lb config \
+    --mode debian \
     --distribution "$DEBIAN_RELEASE" \
     --architectures "$TARGET_ARCH" \
     --archive-areas "main contrib non-free-firmware" \
@@ -32,6 +33,7 @@ lb config \
     --linux-packages "linux-image" \
     --linux-flavours "amd64" \
     --initramfs "live-boot" \
+    --initsystem "systemd" \
     || die "lb config failed"
 
 [ -d "${PROJECT_ROOT}/config" ] || die "lb config did not produce a config/ directory."
