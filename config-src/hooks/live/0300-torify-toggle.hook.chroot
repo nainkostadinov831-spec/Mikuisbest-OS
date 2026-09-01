@@ -1,0 +1,58 @@
+#!/bin/sh
+# Runs inside the chroot at build time. Installs a small, fully-readable
+# native alternative to third-party "torify the whole OS" scripts (e.g.
+# AnonSurf), built only from packages already in this ISO (tor + iptables).
+# This intentionally does NOT run automatically — it's a tool the user
+# invokes deliberately and can read top-to-bottom before trusting.
+
+set -eu
+
+mkdir -p /usr/local/sbin
+
+cat > /usr/local/sbin/mikoisbest-torify <<'SCRIPT'
+#!/usr/bin/env bash
+# mikoisbest-torify — transparently route TCP through Tor via iptables.
+# Read this whole script before running it. Usage:
+#   sudo mikoisbest-torify start   # enable transparent torification
+#   sudo mikoisbest-torify stop    # restore normal routing
+#   sudo mikoisbest-torify status
+#
+# LIMITATIONS (read before relying on this):
+#  - TCP only. UDP traffic (e.g. many VPNs, some games, QUIC/HTTP3) is
+#    NOT torified by this script and may leak outside Tor or simply fail.
+#  - Does not by itself change your browser's fingerprint — use Tor
+#    Browser for anything where fingerprinting matters.
+#  - Only as good as your DNS config: this script also redirects DNS
+#    queries to Tor's DNSPort, but verify with `dig` after enabling.
+
+set -euo pipefail
+TOR_UID="$(id -u debian-tor 2>/dev/null || echo 0)"
+TRANS_PORT=9040
+DNS_PORT=5353
+
+usage() { echo "Usage: $0 {start|stop|status}"; exit 1; }
+[ "$#" -eq 1 ] || usage
+[ "$(id -u)" -eq 0 ] || { echo "Must be run as root."; exit 1; }
+
+case "$1" in
+  start)
+    systemctl start tor
+    iptables -t nat -A OUTPUT -m owner --uid-owner "$TOR_UID" -j RETURN
+    iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT"
+    iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT"
+    echo "Transparent torification enabled (TCP + DNS only; see script header for limits)."
+    ;;
+  stop)
+    iptables -t nat -F OUTPUT
+    echo "Transparent torification disabled; normal routing restored."
+    ;;
+  status)
+    iptables -t nat -L OUTPUT -n
+    systemctl is-active tor || true
+    ;;
+  *) usage ;;
+esac
+SCRIPT
+
+chmod 755 /usr/local/sbin/mikoisbest-torify
+echo "hook 0300: mikoisbest-torify installed at /usr/local/sbin/mikoisbest-torify"

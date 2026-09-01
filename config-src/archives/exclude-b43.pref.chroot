@@ -1,0 +1,7 @@
+# Exclude old Broadcom b43 firmware installers — these fetch proprietary
+# firmware from the internet during postinst and are a common live-build
+# failure point. Nobody needs BCM43xx firmware in 2026 unless they have
+# specific old hardware; if you do, install it manually after boot instead.
+Package: firmware-b43-installer firmware-b43legacy-installer
+Pin: release *
+Pin-Priority: -1

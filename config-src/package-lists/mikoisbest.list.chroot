@@ -1,0 +1,73 @@
+# Mikoisbest OS v1 — package list installed by live-build into the ISO chroot.
+# Verify every entry against https://packages.debian.org/trixie/<name> before
+# each rebuild; do not add anything here that isn't confirmed to exist in
+# Debian 13 (trixie) main/contrib/non-free-firmware.
+#
+# One package per line. Comments start with '#'.
+
+## --- Desktop environment -----------------------------------------------
+task-xfce-desktop
+lightdm
+network-manager
+network-manager-gnome
+
+## --- Default applications ------------------------------------------------
+xfce4-terminal
+thunar
+thunar-archive-plugin
+firefox-esr
+gnome-disk-utility
+mousepad
+
+## --- Basic development / documentation utilities -------------------------
+build-essential
+git
+vim
+nano
+python3
+python3-pip
+man-db
+manpages
+
+## --- Archive utilities -----------------------------------------------------
+file-roller
+zip
+unzip
+p7zip-full
+
+## --- Privacy tools -----------------------------------------------------------
+tor
+tor-geoipdb
+torbrowser-launcher
+torsocks
+proxychains-ng
+macchanger
+resolvconf
+
+## --- Network analysis / defensive security --------------------------------
+wireshark
+tshark
+nmap
+tcpdump
+net-tools
+iproute2
+dnsutils
+curl
+
+## --- Wireless security (passive analysis + authorized lab testing only) ---
+aircrack-ng
+kismet
+hostapd
+iw
+wireless-tools
+
+## --- Password auditing (lab/test hashes only) --------------------------------
+john
+hashcat
+hydra
+
+## --- Firmware (required for real hardware, esp. Wi-Fi, on physical/USB boot)
+firmware-linux-free
+firmware-realtek
+firmware-iwlwifi
+firmware-atheros

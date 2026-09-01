@@ -1,0 +1,15 @@
+#!/bin/sh
+# Runs inside the chroot at build time.
+# Tor is installed but must NOT auto-start on every boot — the OS should
+# never imply "Tor is running / you're anonymous" just because it booted.
+# Users start it deliberately: `sudo systemctl start tor`.
+
+set -eu
+
+if [ -x /bin/systemctl ] || [ -x /usr/bin/systemctl ]; then
+    systemctl disable tor.service || echo "WARNING: could not disable tor.service (non-fatal)"
+else
+    echo "WARNING: systemctl not found in chroot; tor autostart state unverified" >&2
+fi
+
+echo "hook 0100: tor.service disabled by default (start manually when needed)"

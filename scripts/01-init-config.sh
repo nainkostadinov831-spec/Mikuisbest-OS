@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+#
+# 01-init-config.sh — Initializes the live-build config/ tree for
+# Mikoisbest OS and populates it from config-src/. Run from the project
+# root as a normal user (lb config itself does not require root).
+
+set -euo pipefail
+
+DEBIAN_RELEASE="trixie"
+TARGET_ARCH="amd64"
+PROJECT_ROOT="$(pwd)"
+CONFIG_SRC="${PROJECT_ROOT}/config-src"
+
+log()  { printf '[%s] %s\n' "$(date '+%H:%M:%S')" "$*"; }
+die()  { log "ERROR: $*"; exit 1; }
+
+command -v lb >/dev/null 2>&1 || die "'lb' not found. Run scripts/00-prepare-host.sh first."
+[ -d "$CONFIG_SRC" ] || die "config-src/ not found. Run this from the project root."
+
+log "Initializing live-build config for Debian $DEBIAN_RELEASE / $TARGET_ARCH..."
+
+# --archive-areas: main + contrib (torbrowser-launcher) + non-free-firmware
+# (needed for real Wi-Fi/graphics hardware on physical machines/USB drives).
+# --bootloaders defaults to a hybrid set (isolinux + grub-efi) which covers
+# both BIOS and UEFI targets, satisfying the dual-boot requirement.
+lb config \
+    --distribution "$DEBIAN_RELEASE" \
+    --architectures "$TARGET_ARCH" \
+    --archive-areas "main contrib non-free-firmware" \
+    --binary-images iso-hybrid \
+    --debian-installer none \
+    --iso-application "Mikoisbest OS" \
+    --iso-publisher "Mikoisbest OS Project" \
+    --iso-volume "MIKOISBEST_V1" \
+    --apt-recommends false \
+    || die "lb config failed"
+
+[ -d "${PROJECT_ROOT}/config" ] || die "lb config did not produce a config/ directory."
+
+log "Copying package list into config/package-lists/..."
+mkdir -p "${PROJECT_ROOT}/config/package-lists"
+cp "${CONFIG_SRC}/package-lists/mikoisbest.list.chroot" \
+   "${PROJECT_ROOT}/config/package-lists/mikoisbest.list.chroot"
+
+log "Copying hooks into config/hooks/live/..."
+mkdir -p "${PROJECT_ROOT}/config/hooks/live"
+cp "${CONFIG_SRC}/hooks/live/"*.hook.chroot \
+   "${PROJECT_ROOT}/config/hooks/live/"
+chmod +x "${PROJECT_ROOT}/config/hooks/live/"*.hook.chroot
+
+log "Copying APT pin files into config/archives/..."
+mkdir -p "${PROJECT_ROOT}/config/archives"
+cp "${CONFIG_SRC}/archives/"*.pref.chroot \
+   "${PROJECT_ROOT}/config/archives/"
+
+log "Verifying required dependency: mikoisbest.list.chroot is not empty..."
+[ -s "${PROJECT_ROOT}/config/package-lists/mikoisbest.list.chroot" ] || \
+    die "Package list is empty — refusing to proceed with an empty ISO."
+
+log "Config initialized. Review config/package-lists and config/hooks/live before building."
+log "Next: sudo bash build.sh"
