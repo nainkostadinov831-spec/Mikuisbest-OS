@@ -31,6 +31,7 @@ lb config \
     --apt-recommends false \
     --linux-packages "linux-image" \
     --linux-flavours "amd64" \
+    --initramfs "live-boot" \
     || die "lb config failed"
 
 [ -d "${PROJECT_ROOT}/config" ] || die "lb config did not produce a config/ directory."
