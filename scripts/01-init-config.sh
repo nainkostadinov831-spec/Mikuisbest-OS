@@ -26,7 +26,6 @@ lb config \
     --firmware-chroot false \
     --firmware-binary false \
     --binary-images iso-hybrid \
-    --debian-installer none \
     --iso-application "Mikoisbest OS" \
     --iso-publisher "Mikoisbest OS Project" \
     --iso-volume "MIKOISBEST_V1" \
