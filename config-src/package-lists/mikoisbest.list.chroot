@@ -56,7 +56,6 @@ curl
 
 ## --- Wireless security (passive analysis + authorized lab testing only) ---
 aircrack-ng
-kismet
 hostapd
 iw
 wireless-tools
