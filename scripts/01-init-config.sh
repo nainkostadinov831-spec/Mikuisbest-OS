@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# 01-init-config.sh — Initializes the live-build config/ tree for
+# Mikoisbest OS and populates it from config-src/. Run from the project
+# root as a normal user (lb config itself does not require root).
+
 set -euo pipefail
 
 DEBIAN_RELEASE="trixie"
@@ -28,8 +33,8 @@ lb config \
     --iso-application "Mikoisbest OS" \
     --iso-publisher "Mikoisbest OS Project" \
     --iso-volume "MIKOISBEST_V1" \
-    --apt-recommends false \   
-   --linux-flavours "amd64" \
+    --apt-recommends false \
+    --linux-flavours "amd64" \
     || die "lb config failed"
 
 [ -d "${PROJECT_ROOT}/config" ] || die "lb config did not produce a config/ directory."
