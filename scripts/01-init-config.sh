@@ -23,6 +23,8 @@ lb config \
     --mirror-chroot "http://deb.debian.org/debian/" \
     --mirror-binary "http://deb.debian.org/debian/" \
     --security false \
+    --firmware-chroot false \
+    --firmware-binary false \
     --binary-images iso-hybrid \
     --debian-installer none \
     --iso-application "Mikoisbest OS" \
